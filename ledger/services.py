@@ -1,3 +1,5 @@
+import pandas as pd
+
 def calc_summary(transactions):
     income = 0
     expense = 0
@@ -10,3 +12,9 @@ def calc_summary(transactions):
 
     balance = income - expense
     return income, expense, balance
+
+def transactions_to_dataframe(transactions):
+    data = [t.to_dict() for t in transactions]
+    return pd.Dataframe(data, 
+        columns=["data", "type", "category", "description", "amount"]
+    )

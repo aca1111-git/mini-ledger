@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from ledger.models import Transaction
-from ledger.services import calc_summary
+from ledger.services import calc_summary, transactions_to_dataframe
 from ledger.repository import load_csv
 
 
@@ -20,7 +20,7 @@ st.write("5조에 소속된 방재상입니다. !")
 # ======================
 
 # 입력 폼
-
+# class 적용
 date = st.date_input("날짜")
 ttype = st.selectbox("구분", ["지출", "수입"])
 category = st.selectbox("카테고리", ["식비", "교통", "급여", "기타"])
@@ -36,20 +36,20 @@ amount = st.number_input("금액", min_value=0, step=1000)
 # amount = st.number_input()
 # my_trans = Transaction(data1, type1, category1, description1, amount1)
 
-st.button("등록")   # 등록버튼 클릭시 저장. 어디에?
-if amount <= 0:
-    st.warning("금액은 0보다 커야 합니다.")
-else:
-    transaction = Transaction(
+if st.button("등록"):   # 등록버튼 클릭시 저장. 어디에?
+    if amount <= 0:
+        st.warning("금액은 0보다 커야 합니다.")
+    else:
+        transaction = Transaction(
             date = str(date),
             ttype = ttype,
             category = category,
             description = description,
             amount = int(amount)
     )
+    st.session_state.transactions.append(transaction)
+    st.success("거래가 등록되었습니다.")
 
-st.session_state.transactions.append(transaction)
-st.success("거래가 등록되었습니다.")
 # (확인용) 현재 등록된 거래 수
 st.caption(f"현재 등록된 거래 수: {len(st.session_state.transactions)}")
 
@@ -59,14 +59,12 @@ st.caption(f"현재 등록된 거래 수: {len(st.session_state.transactions)}")
 # ======================
 
 st.subheader("📑 거래 목록")
-
 transactions = st.session_state.transactions
 
 if not transactions:
     st.info("등록된 거래가 없습니다.")
 else:
-    data = [t.to_dict() for t in transactions]
-    df = pd.DataFrame(data)
+    df = transactions_to_dataframe(transactions)
     df.columns = ["날짜", "구분", "카테고리", "내용", "금액"]
     st.dataframe(df, use_container_width=True)
 
