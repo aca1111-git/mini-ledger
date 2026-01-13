@@ -22,7 +22,7 @@ def transactions_to_dataframe(transactions):
         columns=["data", "type", "category", "description", "amount"]
     )
     
-
+# 카테고리별 지출 통계
 def expense_by_category(transactions):
     """
     지출(type == '지출')만 필터링해서

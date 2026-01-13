@@ -4,7 +4,7 @@ import pandas as pd
 from ledger.models import Transaction
 from ledger.services import calc_summary, transactions_to_dataframe
 from ledger.services import expense_by_category
-from ledger.repository import load_csv
+from ledger.repository import load_transactions, save_transactions
 
 
 if "transactions" not in st.session_state:
@@ -49,6 +49,10 @@ if st.button("등록"):   # 등록버튼 클릭시 저장. 어디에?
             amount = int(amount)
     )
     st.session_state.transactions.append(transaction)
+
+    # 여기서 CSV에 즉시 저장
+    save_transactions(st.session_state.transactions)
+    
     st.success("거래가 등록되었습니다.")
 
 # (확인용) 현재 등록된 거래 수
@@ -94,9 +98,14 @@ st.write("통계는 calc_summary 함수를 정의해서 활용함 ")
 # ======================
 
 # st.title("대시보드")
-df = pd.read_csv("data/account.csv")
-st.subheader("📑 원본 데이터")
-st.dataframe(df, use_container_width=True)
+# df = pd.read_csv("data/account.csv")
+# st.subheader("📑 원본 데이터")
+# st.dataframe(df, use_container_width=True)
+if "transactions" not in st.session_state:
+    st.session_state.transactions = load_transactions()   #실행시 초기화
+
+
+
 
 # ======================
 # F5. 카테고리별 지출 통계
