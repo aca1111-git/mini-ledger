@@ -3,6 +3,7 @@ import pandas as pd
 
 from ledger.models import Transaction
 from ledger.services import calc_summary, transactions_to_dataframe
+from ledger.services import expense_by_category
 from ledger.repository import load_csv
 
 
@@ -10,16 +11,16 @@ if "transactions" not in st.session_state:
     st.session_state.transactions = []    #초기화 안하면 오류남
 
 st.set_page_config(page_title="나만의 미니 가계부", layout="wide")
-st.title("🏙️ 재상이의 가계부")
+st.title("🏙️ 나만의 가계부")
 
 st.write("첫번째 프로젝트 과제입니다. !")
-st.write("5조에 소속된 방재상입니다. !")
+st.subheader("5조 방재상입니다. !")
 
 # ======================
 # F1. 거래 등록
 # ======================
 
-# 입력 폼
+st.subheader("📑 입력 화면")
 # class 적용
 date = st.date_input("날짜")
 ttype = st.selectbox("구분", ["지출", "수입"])
@@ -96,3 +97,19 @@ st.write("통계는 calc_summary 함수를 정의해서 활용함 ")
 df = pd.read_csv("data/account.csv")
 st.subheader("📑 원본 데이터")
 st.dataframe(df, use_container_width=True)
+
+# ======================
+# F5. 카테고리별 지출 통계
+# ======================
+
+st.subheader("📊 카테고리별 지출 통계")
+
+transactions = st.session_state.transactions
+expense_summary = expense_by_category(transactions)
+
+if expense_summary.empty:
+    st.info("지출 데이터가 없습니다.")
+else:
+    st.bar_chart(expense_summary)
+
+
