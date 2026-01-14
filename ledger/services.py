@@ -44,5 +44,5 @@ def expense_by_category(transactions):
     summary = df.groupby("category", as_index=True)["amount"].sum()
     return summary
 
-    # pd.Dataframe  오류 조심
+    # pd.DataFrame  대소문자 오류 조심
     # st.dataframe
